@@ -16,7 +16,8 @@ A Personal Finance Tracker for Students, is a web application designed to help s
 ## Tech Stack
 
 ### Frontend
-- **Angular** for frontend
+- **Angular** Framework used for building the frontend.
+- **Angular Material** Provides UI components with a clean and modern design (used for buttons, forms, modals, etc.).
 - **Chart.js** for expense visualizations.
 
 ### Backend
