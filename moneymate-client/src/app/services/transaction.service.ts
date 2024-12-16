@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class TransactionService {
-  private apiUrl = `http://localhost:5000/api/transaction`;
+  private apiUrl = `https://moneymate-oy6p.onrender.com/api/transaction`;
 
   constructor(private http: HttpClient) {}
 

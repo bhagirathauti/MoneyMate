@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth'; 
+  private apiUrl = 'https://moneymate-oy6p.onrender.com/api/auth'; 
 
   constructor(private http: HttpClient) { }
 
