@@ -11,8 +11,8 @@ export class TransactionService {
 
   constructor(private http: HttpClient) {}
 
-  addTransaction(email: string, category: string, amount: number, description: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/add-transaction`, { email, category, amount, description }).pipe(
+  addTransaction(email: string, category: string, amount: number, description: string, date: Date): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/add-transaction`, { email, category, amount, description, date }).pipe(
       catchError(this.handleError)
     );
   }
@@ -23,8 +23,8 @@ export class TransactionService {
     );
   }
 
-  editTransaction(id: string, category: string, amount: number, description: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/edit-transaction/${id}`, { category, amount, description }).pipe(
+  editTransaction(id: string, category: string, amount: number, description: string,date:Date): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/edit-transaction/${id}`, { category, amount, description,date }).pipe(
       catchError(this.handleError)
     );
   }
