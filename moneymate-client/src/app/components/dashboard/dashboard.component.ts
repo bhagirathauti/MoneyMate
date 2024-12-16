@@ -152,6 +152,7 @@ export class DashboardComponent implements OnInit {
         });
         this.originalData = [...this.originalData, result];
         this.applyFilters();
+        window.location.reload();
       }
     });
   }
