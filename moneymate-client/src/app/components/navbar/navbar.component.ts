@@ -4,7 +4,6 @@ import { MatIcon } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink } from '@angular/router';
 
-
 @Component({
   selector: 'app-navbar',
   standalone: true,
