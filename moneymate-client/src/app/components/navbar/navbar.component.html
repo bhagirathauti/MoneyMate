@@ -1,1 +1,45 @@
-<p>navbar works!</p>
+<mat-toolbar color="primary" class="enhanced-navbar">
+    <div class="navbar-container">
+      <div class="logo-section">
+        <img src="/assets/logo.png" alt="AI Journal Logo" class="app-logo" onerror="this.style.display='none'">
+        <span class="app-title">FinanceTracker</span>
+      </div>
+      
+      <span class="spacer"></span>
+      
+      <nav class="navigation">
+        <button mat-stroked-button 
+                routerLink="/dashboard" 
+                routerLinkActive="active-link"
+                matTooltip="Dashboard">
+          <mat-icon>dashboard</mat-icon>
+          Dashboard
+        </button>
+        
+        <button mat-stroked-button 
+                routerLink="/trends" 
+                routerLinkActive="active-link"
+                matTooltip="View Insights">
+          <mat-icon>insights</mat-icon>
+          Trends
+        </button>
+
+        <button mat-stroked-button 
+                routerLink="/goals" 
+                routerLinkActive="active-link"
+                matTooltip="Financial Goals">
+          <mat-icon>target</mat-icon>
+          Goals
+        </button>
+        
+        <button mat-raised-button
+                (click)="logout()" 
+                color="accent" 
+                routerLink="/login"
+                matTooltip="Logout">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </nav>
+    </div>
+  </mat-toolbar>
