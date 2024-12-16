@@ -83,7 +83,8 @@ export class NewEntryDialogComponent {
         this.email, 
         newEntry.category, 
         newEntry.amount, 
-        newEntry.description
+        newEntry.description,
+        newEntry.date
       )
         .subscribe(
           (res) => {

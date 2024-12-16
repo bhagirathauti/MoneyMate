@@ -1,4 +1,3 @@
-
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -81,10 +80,12 @@ export class EditEntryDialogComponent {
         updatedEntry._id,
         updatedEntry.category,
         updatedEntry.amount,
-        updatedEntry.description
+        updatedEntry.description,
+        updatedEntry.date
       ).subscribe(() => {
         this.dialogRef.close(updatedEntry);
       });
 
     }
   }
+}
