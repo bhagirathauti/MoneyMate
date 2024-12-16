@@ -70,68 +70,74 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
-
+  
     this.transactionService.getTransactions(localStorage.getItem('email') || '')
-      .subscribe(
-        transactions => {
-          this.originalData = transactions;
-          this.dataSource = new MatTableDataSource(transactions);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-          this.loading = false;
-        }
-      );
-
+      .subscribe(transactions => {
+        // Convert transaction dates to Date objects
+        this.originalData = transactions.map(transaction => ({
+          ...transaction,
+          date: new Date(transaction.date)
+        }));
+        
+        this.dataSource = new MatTableDataSource(this.originalData);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.loading = false;
+      });
+  
     this.filterForm.valueChanges.subscribe(() => {
       this.applyFilters();
     });
   }
+  
 
   applyFilters() {
     let filteredData = [...this.originalData];
-
+  
     const selectedCategory = this.filterForm.get('category')?.value;
     if (selectedCategory) {
       filteredData = filteredData.filter(transaction =>
         transaction.category === selectedCategory
       );
     }
-
+  
     const selectedDateRange = this.filterForm.get('dateRange')?.value;
     if (selectedDateRange) {
       const now = new Date();
       filteredData = filteredData.filter(transaction => {
+        const transactionDate = new Date(transaction.date);
         switch (selectedDateRange) {
           case 'last_day':
-            return this.isWithinLastDay(transaction.date, now);
+            return this.isWithinLastDay(transactionDate, now);
           case 'last_week':
-            return this.isWithinLastWeek(transaction.date, now);
+            return this.isWithinLastWeek(transactionDate, now);
           case 'last_month':
-            return this.isWithinLastMonth(transaction.date, now);
+            return this.isWithinLastMonth(transactionDate, now);
           default:
             return true;
         }
       });
     }
-
+  
     this.dataSource.data = filteredData;
   }
+  
 
   isWithinLastDay(transactionDate: Date, currentDate: Date): boolean {
     const oneDayAgo = new Date(currentDate.getTime() - (24 * 60 * 60 * 1000));
-    return transactionDate >= oneDayAgo;
+    return transactionDate >= oneDayAgo && transactionDate <= currentDate;
   }
-
+  
   isWithinLastWeek(transactionDate: Date, currentDate: Date): boolean {
     const oneWeekAgo = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000));
-    return transactionDate >= oneWeekAgo;
+    return transactionDate >= oneWeekAgo && transactionDate <= currentDate;
   }
-
+  
   isWithinLastMonth(transactionDate: Date, currentDate: Date): boolean {
     const oneMonthAgo = new Date(currentDate.getTime() - (30 * 24 * 60 * 60 * 1000));
-    return transactionDate >= oneMonthAgo;
+    return transactionDate >= oneMonthAgo && transactionDate <= currentDate;
   }
-
+  
 
   addEntry() {
     const dialogRef = this.dialog.open(NewEntryDialogComponent, {
