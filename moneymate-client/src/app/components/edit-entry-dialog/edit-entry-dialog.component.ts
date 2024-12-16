@@ -11,6 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { Transaction } from '../../models/transaction.model';
+import { TransactionService } from '../../services/transaction.service';
 
 const CATEGORY_OPTIONS = [
   'Groceries',
@@ -51,7 +52,8 @@ export class EditEntryDialogComponent {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<EditEntryDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { email: string; entry: Transaction }
+    @Inject(MAT_DIALOG_DATA) public data: { email: string; entry: Transaction },
+    private transactionService: TransactionService
   ) {
     this.newEntryForm = this.fb.group({
       category: [data.entry.category || '', Validators.required],
@@ -74,9 +76,15 @@ export class EditEntryDialogComponent {
         date: this.newEntryForm.get('date')?.value.toISOString(),
       };
 
-      console.log('Updated entry:', updatedEntry);
+      this.transactionService.editTransaction(
+        updatedEntry._id,
+        updatedEntry.category,
+        updatedEntry.amount,
+        updatedEntry.description
+      ).subscribe(() => {
+        this.dialogRef.close(updatedEntry);
+      });
 
-      this.dialogRef.close(updatedEntry);
     }
   }
 }

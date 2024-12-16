@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
+import { TransactionService } from '../../services/transaction.service';
 
 // Define category options
 const CATEGORY_OPTIONS = [
@@ -52,7 +53,8 @@ export class NewEntryDialogComponent {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<NewEntryDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { email: string }
+    @Inject(MAT_DIALOG_DATA) public data: { email: string },
+    private transactionService: TransactionService
   ) {
     this.email = data.email;
     this.newEntryForm = this.fb.group({
@@ -75,13 +77,21 @@ export class NewEntryDialogComponent {
         description: this.newEntryForm.get('description')?.value,
         date: this.newEntryForm.get('date')?.value.toISOString()
       };
-
-      console.log('New entry:', newEntry);
-
-      this.dialogRef.close({
+      
+      this.transactionService.addTransaction(
+        this.email, 
+        newEntry.category, 
+        newEntry.amount, 
+        newEntry.description
+      )
+        .subscribe(
+          (res) => {
+            this.dialogRef.close({
               ...newEntry,
-              entryId: "1"
+              entryId: res._id 
             });
+          }
+        );
     }
   }
 }

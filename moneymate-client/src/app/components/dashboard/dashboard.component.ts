@@ -18,14 +18,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { TransactionService } from '../../services/transaction.service';
 
 @Component({
   selector: 'app-expenses',
   standalone: true,
   imports: [
-    MatIcon, MatPaginator, MatSort, MatProgressSpinner, 
-    MatCard, MatCardContent, MatTableModule, CommonModule, 
-    MatButton, ReactiveFormsModule, MatFormFieldModule, 
+    MatIcon, MatPaginator, MatSort, MatProgressSpinner,
+    MatCard, MatCardContent, MatTableModule, CommonModule,
+    MatButton, ReactiveFormsModule, MatFormFieldModule,
     MatSelectModule, MatDatepickerModule, MatNativeDateModule,
     MatInputModule
   ],
@@ -34,7 +35,7 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class DashboardComponent implements OnInit {
   displayedColumns: string[] = ['category', 'amount', 'date', 'description', 'actions'];
-  
+
   dataSource!: MatTableDataSource<Transaction>;
   loading = false;
   errorMessage = '';
@@ -50,7 +51,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   categories = [
-    'Groceries', 'Utilities', 'Entertainment', 
+    'Groceries', 'Utilities', 'Entertainment',
     'Dining', 'Transportation', 'Other'
   ];
 
@@ -62,30 +63,27 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private transactionService: TransactionService
+  ) { }
 
   ngOnInit() {
-    const ELEMENT_DATA: Transaction[] = [
-      {_id: '1', category: 'Groceries', amount: 54.75, date: new Date('2024-12-15'), description: 'Weekly grocery shopping'},
-      {_id: '2', category: 'Utilities', amount: 120.50, date: new Date('2024-01-10'), description: 'Electricity bill'},
-      {_id: '3', category: 'Entertainment', amount: 35.20, date: new Date('2024-01-20'), description: 'Movie night'},
-      {_id: '4', category: 'Dining', amount: 45.60, date: new Date('2024-01-22'), description: 'Restaurant dinner'},
-      {_id: '5', category: 'Transportation', amount: 25.30, date: new Date('2024-01-05'), description: 'Uber ride'},
-      {_id: '6', category: 'Groceries', amount: 42.15, date: new Date('2024-01-25'), description: 'Grocery run'}
-    ];
-    
-    this.originalData = ELEMENT_DATA;
-    this.dataSource = new MatTableDataSource(ELEMENT_DATA);
+    this.loading = true;
+
+    this.transactionService.getTransactions(localStorage.getItem('email') || '')
+      .subscribe(
+        transactions => {
+          this.originalData = transactions;
+          this.dataSource = new MatTableDataSource(transactions);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.loading = false;
+        }
+      );
 
     this.filterForm.valueChanges.subscribe(() => {
       this.applyFilters();
     });
-  }
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
 
   applyFilters() {
@@ -93,7 +91,7 @@ export class DashboardComponent implements OnInit {
 
     const selectedCategory = this.filterForm.get('category')?.value;
     if (selectedCategory) {
-      filteredData = filteredData.filter(transaction => 
+      filteredData = filteredData.filter(transaction =>
         transaction.category === selectedCategory
       );
     }
@@ -102,7 +100,7 @@ export class DashboardComponent implements OnInit {
     if (selectedDateRange) {
       const now = new Date();
       filteredData = filteredData.filter(transaction => {
-        switch(selectedDateRange) {
+        switch (selectedDateRange) {
           case 'last_day':
             return this.isWithinLastDay(transaction.date, now);
           case 'last_week':
@@ -133,20 +131,20 @@ export class DashboardComponent implements OnInit {
     return transactionDate >= oneMonthAgo;
   }
 
-  
+
   addEntry() {
     const dialogRef = this.dialog.open(NewEntryDialogComponent, {
       width: '500px',
-      data: { email: 'user@example.com' }
+      data: { email: localStorage.getItem('email') || '' }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.snackBar.open('Entry added successfully', 'Close', { 
-          duration: 3000 
+        this.snackBar.open('Entry added successfully', 'Close', {
+          duration: 3000
         });
         this.originalData = [...this.originalData, result];
-        this.applyFilters(); 
+        this.applyFilters();
       }
     });
   }
@@ -154,8 +152,8 @@ export class DashboardComponent implements OnInit {
   editEntry(entry: any) {
     const dialogRef = this.dialog.open(EditEntryDialogComponent, {
       width: '500px',
-      data: { 
-        email: 'user@example.com',
+      data: {
+        email: localStorage.getItem('email') || '',
         entry: entry
       }
     });
@@ -167,12 +165,12 @@ export class DashboardComponent implements OnInit {
           const updatedData = [...this.originalData];
           updatedData[index] = result;
           this.originalData = updatedData;
-          
-          this.snackBar.open('Entry updated successfully', 'Close', { 
-            duration: 3000 
+
+          this.snackBar.open('Entry updated successfully', 'Close', {
+            duration: 3000
           });
-          
-          this.applyFilters(); 
+
+          this.applyFilters();
         }
       }
     });
@@ -181,13 +179,18 @@ export class DashboardComponent implements OnInit {
   deleteEntry(entryId: string) {
     const confirmDelete = confirm('Are you sure you want to delete this entry?');
     if (confirmDelete) {
-      this.originalData = this.originalData.filter(e => e._id !== entryId);
-      
-      this.snackBar.open('Entry deleted successfully', 'Close', { 
-        duration: 3000 
-      });
+      this.transactionService.deleteTransaction(entryId, localStorage.getItem('email') || '')
+        .subscribe(() => {
+          this.originalData = this.originalData.filter(e => e._id !== entryId);
 
-      this.applyFilters(); 
+          this.snackBar.open('Entry deleted successfully', 'Close', {
+            duration: 3000
+          });
+
+          this.applyFilters();
+        });
+
+
     }
   }
 }
