@@ -4,13 +4,13 @@ const User = require('../Models/UserModel');
 const router = express.Router();
 
 router.post('/add-transaction', async (req, res) => {
-    const { email, category,amount,description } = req.body;
+    const { email, category,amount,description,date } = req.body;
     if(!email){
         console.log("Please login first");
     }
 
     try {
-        const newEntry = new Transaction({ category,amount,description });
+        const newEntry = new Transaction({ category,amount,description,date });
         const savedEntry = await newEntry.save();
 
         const user = await User.findOneAndUpdate(
@@ -50,7 +50,7 @@ router.get('/get-transactions/:email', async (req, res) => {
 });
 router.put('/edit-transaction/:id', async (req, res) => {
     const { id } = req.params;
-    const { category,amount,description } = req.body;
+    const { category,amount,description,date } = req.body;
 
     if (!category || !amount || !description) {
         return res.status(400).json({ message: 'All fields are required to update the transaction.' });
@@ -59,7 +59,7 @@ router.put('/edit-transaction/:id', async (req, res) => {
     try {
         const updatedTransaction = await Transaction.findByIdAndUpdate(
             id,
-            { category,amount,description, updatedAt: Date.now() },
+            { category,amount,description,date, updatedAt: Date.now() },
             { new: true }
         );
 
