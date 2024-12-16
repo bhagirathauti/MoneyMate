@@ -38,7 +38,7 @@ router.get('/get-transactions/:email', async (req, res) => {
         }
         const transactionIds = user.transactionIds;
         if (!transactionIds || transactionIds.length === 0) {
-            return res.status(404).json({ message: 'No transaction entries found for this user' });
+            return res.status(200).json([]);
         }
         const Transactions = await Transaction.find({
             _id: { $in: transactionIds }
