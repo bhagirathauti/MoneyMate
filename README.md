@@ -1,5 +1,9 @@
 # MoneyMate
 
+## Deployed Links
+- **Frontend** :  https://moneymate-client.vercel.app/
+- **Backend** : https://moneymate-oy6p.onrender.com/
+
 ## Overview
 A Personal Finance Tracker for Students, is a web application designed to help students manage their daily expenses and monitor categorized spending. This project is tailored to encourage financial awareness and effective money management among students.
 
