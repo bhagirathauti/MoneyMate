@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 
 const authRoutes = require("./Routes/auth");
+const transactionRoutes = require("./Routes/transaction")
 const connectDB = require('./Configs/db');
 dotenv.config();
 const app = express();
@@ -10,6 +11,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json())
 app.use('/api/auth', authRoutes);
+app.use('/api/transaction',transactionRoutes);
 app.get('/', (req, res) => {
   res.send('Welcome to the Auth API!');
 });
